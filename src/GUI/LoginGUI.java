@@ -12,6 +12,11 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import Controller.Session;
 
@@ -40,8 +45,10 @@ public class LoginGUI extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
 	 */
-	public LoginGUI() {
+	public LoginGUI() throws ClassNotFoundException, SQLException {
 		setTitle("Login Form");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 426, 300);
@@ -67,22 +74,37 @@ public class LoginGUI extends JFrame {
 		passwordField.setBounds(132, 108, 237, 22);
 		contentPane.add(passwordField);
 		
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		Connection conn = DriverManager.getConnection("jdbc:sqlserver://10.100.70.70\\PBD2017;user=i14039;password=i14039;database=i14039");
+		Statement sta = conn.createStatement();
+		
+		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String username = usernameField.getText();
 				String password = passwordField.getText();
 				
-				if(username.equals("Pico") && password.equals("Bongou")){
-					JOptionPane.showMessageDialog(rootPane, "Success Desu");
-					session = new Session(username);
-					SenseiHomeGUI home = new SenseiHomeGUI(session);
-					home.setSession(session);
-					home.setVisible(true);
+				String sql = "select * from freelancer where username = '"+username+"' AND password = '"+password+"'";
+				ResultSet rs;
+				try {
+					rs = sta.executeQuery(sql);
+					rs.next();
+					if(rs.getString("nama")!=null){
+						JOptionPane.showMessageDialog(rootPane, "Success Desu");
+						session = new Session(username);
+						SenseiHomeGUI home = new SenseiHomeGUI(session);
+						home.setSession(session);
+						home.setVisible(true);
+					}
+					else{
+						JOptionPane.showMessageDialog(rootPane, "Ncent Blyad");
+					}
+				} catch (SQLException e1) {
+					
+					e1.printStackTrace();
 				}
-				else{
-					JOptionPane.showMessageDialog(rootPane, "Ncent Blyad");
-				}
+				
 			}
 		});
 		btnLogin.setBounds(77, 188, 97, 25);
@@ -91,8 +113,18 @@ public class LoginGUI extends JFrame {
 		JButton btnRegister = new JButton("Register");
 		btnRegister.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				RegisterGUI register = new RegisterGUI();
-				register.setVisible(true);
+				RegisterGUI register;
+				try {
+					register = new RegisterGUI();
+					register.setVisible(true);
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 		});
 		btnRegister.setBounds(235, 188, 97, 25);

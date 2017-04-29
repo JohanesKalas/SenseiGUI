@@ -7,10 +7,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
@@ -22,7 +28,7 @@ public class RegisterGUI extends JFrame {
 	private JTextField emailField;
 	private JTextField alamatField;
 	private JPasswordField passwordField;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -41,8 +47,10 @@ public class RegisterGUI extends JFrame {
 
 	/**
 	 * Create the frame.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public RegisterGUI() {
+	public RegisterGUI() throws SQLException, ClassNotFoundException {
 		setTitle("Register Form");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 418, 511);
@@ -123,6 +131,36 @@ public class RegisterGUI extends JFrame {
 		passwordField = new JPasswordField();
 		passwordField.setBounds(150, 109, 219, 22);
 		contentPane.add(passwordField);
+		
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		Connection conn = DriverManager.getConnection("jdbc:sqlserver://10.100.70.70\\PBD2017;user=i14039;password=i14039;database=i14039");
+		Statement sta = conn.createStatement();
+		//String Sql = "exec registerFreelancer "+usernameField.getText()+","+passwordField.getText()+","+namaField.getText()+","+emailField.getText();
+		String sql = "select * from city";
+		ResultSet rs = sta.executeQuery(sql);
+		while(rs.next()){
+			kotaComboBox.addItem(rs.getString("nama"));
+		}
+		
+		sql = "select * from country";
+		rs = sta.executeQuery(sql);
+		while(rs.next()){
+			negaraComboBox.addItem(rs.getString("nama"));
+		}
+		btnSubmit.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				try {
+					String sql1 = "exec registerFreelancer '"+usernameField.getText()+"','"+passwordField.getText()+"','"+namaField.getText()+"','"+emailField.getText()+"','"+alamatField.getText()+"',"+(kotaComboBox.getSelectedIndex()+1)+","+(negaraComboBox.getSelectedIndex()+1);
+					if(sta.execute(sql1)){
+						JOptionPane.showMessageDialog(rootPane, "Registrasi Berhasil!");
+						RegisterGUI.this.dispose();
+					}
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 	}
 
 }

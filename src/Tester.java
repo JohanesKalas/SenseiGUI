@@ -14,10 +14,10 @@ public class Tester {
 		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 		Connection conn = DriverManager.getConnection("jdbc:sqlserver://10.100.70.70\\PBD2017;user=i14039;password=i14039;database=i14039");
 		Statement sta = conn.createStatement();
-		String Sql = "select * from peminjaman;";
+		String Sql = "select * from pengusaha;";
 		ResultSet rs = sta.executeQuery(Sql);
 		while (rs.next()) {
-			System.out.println(rs.getString("tanggal_pinjam"));
+			System.out.println(rs.getString("nama"));
 		}
         /*try {
             String dbURL = "jdbc:sqlserver://10.100.70.70\\PBD2017;User=i14039;passi14039;DatabaseName=i14039";

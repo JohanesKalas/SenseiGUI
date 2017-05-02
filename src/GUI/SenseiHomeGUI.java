@@ -8,6 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import Controller.Session;
+import javax.swing.JButton;
+import java.awt.Font;
+import java.awt.event.ActionListener;
+import java.sql.SQLException;
+import java.awt.event.ActionEvent;
 
 public class SenseiHomeGUI extends JFrame {
 
@@ -50,8 +55,35 @@ public class SenseiHomeGUI extends JFrame {
 		this.session = session;
 		
 		JLabel sessionName = new JLabel(this.session.username);
-		sessionName.setBounds(77, 13, 56, 16);
+		sessionName.setBounds(77, 13, 343, 16);
 		contentPane.add(sessionName);
+		
+		JButton searchJob = new JButton("Search Job");
+		searchJob.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				SearchJobGUI sj;
+				try {
+					sj = new SearchJobGUI(session);
+					sj.setVisible(true);
+					SenseiHomeGUI.this.dispose();
+				} catch (ClassNotFoundException | SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		searchJob.setBounds(162, 92, 97, 25);
+		contentPane.add(searchJob);
+		
+		JButton editProfile = new JButton("Edit Profile");
+		editProfile.setBounds(162, 141, 97, 25);
+		contentPane.add(editProfile);
+		
+		JLabel lblNewLabel = new JLabel("SENSEI.COM");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		lblNewLabel.setBounds(12, 42, 111, 33);
+		contentPane.add(lblNewLabel);
 		
 
 		
